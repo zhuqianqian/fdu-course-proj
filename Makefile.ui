@@ -1,0 +1,45 @@
+GUIEXE=bin/snf204w.exe
+OBJ2=bin/wsnfcore.obj
+OBJ3=bin/fileutil.obj
+OBJGUIMAIN=bin/snfwgui.obj
+OBJMISC=bin/misc.obj
+OBJOPTION=bin/option.obj
+OBJRUNVIEW=bin/runview.obj
+OBJPROTOHLP=bin/protohlp.obj
+RESOURCE=bin/snf204.res
+
+CL_FLAG = /O2 /Oi /GL /D "_X86_" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_UNICODE" /D "UNICODE" /FD /EHsc /MD /Gy /W3 /nologo /c /Zi /TP 
+LINK_FLAG= /INCREMENTAL:NO /NOLOGO /MANIFEST /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /DYNAMICBASE /NXCOMPAT /MACHINE:X86 /ERRORREPORT:PROMPT
+SYSLIB=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+
+$(GUIEXE):$(OBJGUIMAIN) $(OBJRUNVIEW) $(OBJMISC) $(OBJOPTION) $(OBJPROTOHLP) $(OBJ2) $(OBJ3) $(RESOURCE)
+	LINK $(LINK_FLAG) /out:$(GUIEXE) $(OBJGUIMAIN) $(OBJRUNVIEW) $(OBJMISC) $(OBJOPTION) $(OBJPROTOHLP) $(OBJ2) $(OBJ3) $(RESOURCE) $(SYSLIB)
+
+$(OBJPROTOHLP): w32ui/protohlp.c
+        CL $(CL_FLAG) /Fo$(OBJPROTOHLP) w32ui/protohlp.c
+
+$(OBJGUIMAIN): w32ui/snfwgui.c
+	CL $(CL_FLAG) /Fo$(OBJGUIMAIN) w32ui/snfwgui.c
+	
+$(OBJRUNVIEW): w32ui/runview.c
+	CL $(CL_FLAG) /Fo$(OBJRUNVIEW) w32ui/runview.c
+	
+$(OBJMISC): w32ui/misc.c
+	CL $(CL_FLAG) /Fo$(OBJMISC) w32ui/misc.c
+	
+$(OBJOPTION): w32ui/option.c
+	CL $(CL_FLAG) /Fo$(OBJOPTION) w32ui/option.c
+	
+$(OBJ3): src/fileutil.c
+	CL /c /D "_X86_" /Fo$(OBJ3) src/fileutil.c
+
+$(OBJ2): src/wsnfcore.c
+	CL /c /D "_X86_" /Fo$(OBJ2) src/wsnfcore.c
+
+$(RESOURCE): resources/snfres.rc
+	RC /Fo$(RESOURCE) resources/snfres.rc
+	
+clean:
+	del /s /q /f *.obj
+	del /s /q /f *.res
+	del /s /q /f *.exe.manifest
